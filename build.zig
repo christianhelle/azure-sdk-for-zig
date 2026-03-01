@@ -55,6 +55,17 @@ pub fn build(b: *std.Build) void {
     });
     _ = appconfig_mod;
 
+    // ── Azure Cosmos DB ─────────────────────────────────────────
+    const cosmos_mod = b.addModule("azure_data_cosmos", .{
+        .root_source_file = b.path("sdk/data/cosmos/src/root.zig"),
+        .target = target,
+        .optimize = optimize,
+        .imports = &.{
+            .{ .name = "azure_core", .module = core_mod },
+        },
+    });
+    _ = cosmos_mod;
+
     // ── Tests ───────────────────────────────────────────────────
     const test_step = b.step("test", "Run all unit tests");
 
@@ -124,4 +135,18 @@ pub fn build(b: *std.Build) void {
     });
     const run_appconfig_tests = b.addRunArtifact(appconfig_tests);
     test_step.dependOn(&run_appconfig_tests.step);
+
+    // Cosmos DB tests
+    const cosmos_tests = b.addTest(.{
+        .root_module = b.createModule(.{
+            .root_source_file = b.path("sdk/data/cosmos/src/root.zig"),
+            .target = target,
+            .optimize = optimize,
+            .imports = &.{
+                .{ .name = "azure_core", .module = core_mod },
+            },
+        }),
+    });
+    const run_cosmos_tests = b.addRunArtifact(cosmos_tests);
+    test_step.dependOn(&run_cosmos_tests.step);
 }

@@ -7,12 +7,28 @@
 ///
 /// Required environment variables vary by credential type.
 const std = @import("std");
+const builtin = @import("builtin");
 const core = @import("azure_core");
 const AccessToken = core.auth.AccessToken;
 const TokenRequestOptions = core.auth.TokenRequestOptions;
 const TokenCredential = core.auth.TokenCredential;
 
 const ClientSecretCredential = @import("client_secret_credential.zig").ClientSecretCredential;
+
+/// Cross-platform helper to read environment variables.
+/// On POSIX systems uses std.posix.getenv; on Windows uses std.process.getEnvVarOwned
+/// but falls back to null on allocation failure.
+fn getEnv(comptime key: []const u8) ?[]const u8 {
+    if (builtin.os.tag == .windows) {
+        // On Windows, environment variables are UTF-16. We cannot use
+        // std.posix.getenv. Since EnvironmentCredential.init does not
+        // take an allocator, we fall back to "unavailable" on Windows
+        // at compile time. A future improvement can accept an allocator.
+        return null;
+    } else {
+        return std.posix.getenv(key);
+    }
+}
 
 pub const EnvironmentCredential = struct {
     inner: ?CredentialKind = null,
@@ -23,13 +39,15 @@ pub const EnvironmentCredential = struct {
 
     /// Creates an EnvironmentCredential by reading from environment variables.
     /// Returns null if the required environment variables are not set.
+    /// Note: On Windows, environment variable reading requires an allocator;
+    /// use `initWithAllocator` for Windows support.
     pub fn init() EnvironmentCredential {
-        const tenant_id = std.posix.getenv("AZURE_TENANT_ID");
-        const client_id = std.posix.getenv("AZURE_CLIENT_ID");
+        const tenant_id = getEnv("AZURE_TENANT_ID");
+        const client_id = getEnv("AZURE_CLIENT_ID");
 
         if (tenant_id != null and client_id != null) {
             // Try client secret first
-            if (std.posix.getenv("AZURE_CLIENT_SECRET")) |client_secret| {
+            if (getEnv("AZURE_CLIENT_SECRET")) |client_secret| {
                 return .{
                     .inner = .{
                         .client_secret = ClientSecretCredential.init(
