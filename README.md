@@ -13,6 +13,7 @@ Azure SDK client libraries for the [Zig programming language](https://ziglang.or
 | `azure_storage_blob` | Azure Blob Storage client: BlobServiceClient, ContainerClient, BlobClient |
 | `azure_security_keyvault` | Azure Key Vault clients: SecretClient, KeyClient, CertificateClient |
 | `azure_data_appconfiguration` | Azure App Configuration client: ConfigurationClient |
+| `azure_data_cosmos` | Azure Cosmos DB client: CosmosClient (databases, containers, items, queries, stored procedures) |
 
 ## Requirements
 
@@ -44,6 +45,7 @@ exe.root_module.addImport("azure_identity", azure_dep.module("azure_identity"));
 exe.root_module.addImport("azure_storage_blob", azure_dep.module("azure_storage_blob"));
 exe.root_module.addImport("azure_security_keyvault", azure_dep.module("azure_security_keyvault"));
 exe.root_module.addImport("azure_data_appconfiguration", azure_dep.module("azure_data_appconfiguration"));
+exe.root_module.addImport("azure_data_cosmos", azure_dep.module("azure_data_cosmos"));
 ```
 
 ## Usage Examples
@@ -114,6 +116,31 @@ var buf: [256]u8 = undefined;
 var req = try client.buildGetSettingRequest(&buf, "app:color", null);
 ```
 
+### Azure Cosmos DB
+
+```zig
+const cosmos = @import("azure_data_cosmos");
+
+const client = cosmos.CosmosClient.init(
+    "https://my-cosmos.documents.azure.com",
+    null,
+);
+
+// Build a request to create an item
+var buf: [512]u8 = undefined;
+var req = try client.buildCreateItemRequest(&buf, "my-db", "my-container", .{
+    .partition_key = "[\"tenant-1\"]",
+    .is_upsert = true,
+});
+
+// Build a query request
+var qbuf: [512]u8 = undefined;
+var qreq = try client.buildQueryRequest(&qbuf, "my-db", "my-container", .{
+    .query = "SELECT * FROM c WHERE c.type = 'user'",
+    .max_item_count = 100,
+});
+```
+
 ## Project Structure
 
 ```
@@ -160,10 +187,15 @@ azure-sdk-for-zig/
 │   │           ├── certificate_client.zig
 │   │           └── models.zig
 │   └── data/
-│       └── appconfiguration/  # azure_data_appconfiguration
+│       ├── appconfiguration/  # azure_data_appconfiguration
+│       │   └── src/
+│       │       ├── root.zig
+│       │       ├── configuration_client.zig
+│       │       └── models.zig
+│       └── cosmos/            # azure_data_cosmos - Cosmos DB
 │           └── src/
 │               ├── root.zig
-│               ├── configuration_client.zig
+│               ├── cosmos_client.zig
 │               └── models.zig
 └── .github/
     └── workflows/

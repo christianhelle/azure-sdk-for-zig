@@ -13,6 +13,7 @@ The SDK follows a modular architecture with clear separation of concerns:
 - **azure_storage_blob** (`sdk/storage/blob/`): Azure Blob Storage client with service, container, and blob-level operations. Depends on azure_core.
 - **azure_security_keyvault** (`sdk/security/keyvault/`): Azure Key Vault clients for secrets, keys, and certificates. Depends on azure_core.
 - **azure_data_appconfiguration** (`sdk/data/appconfiguration/`): Azure App Configuration client. Depends on azure_core.
+- **azure_data_cosmos** (`sdk/data/cosmos/`): Azure Cosmos DB client for databases, containers, items, queries, and stored procedures. Depends on azure_core.
 
 ## Coding Conventions
 
