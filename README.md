@@ -1,4 +1,4 @@
-# Azure SDK for Zig
+# Azure SDK's for Zig
 
 [![CI](https://github.com/christianhelle/azure-sdk-for-zig/actions/workflows/ci.yml/badge.svg)](https://github.com/christianhelle/azure-sdk-for-zig/actions/workflows/ci.yml)
 
