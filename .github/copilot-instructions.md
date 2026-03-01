@@ -17,7 +17,7 @@ The SDK follows a modular architecture with clear separation of concerns:
 
 ## Coding Conventions
 
-- **Zig version**: Target Zig 0.14.0+
+- **Zig version**: Target Zig 0.15.2+
 - **Memory management**: Use Zig's allocator pattern. Avoid hidden allocations. All types that allocate must accept an `Allocator` and have a corresponding `deinit` method.
 - **Error handling**: Use Zig's error union types. Map HTTP status codes to `azure_core.Error` via `Error.fromHttpStatus()`.
 - **Testing**: Every public API should have comprehensive unit tests. Tests are in the same file as the implementation (Zig convention).
