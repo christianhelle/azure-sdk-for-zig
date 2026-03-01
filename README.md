@@ -17,7 +17,7 @@ Azure SDK client libraries for the [Zig programming language](https://ziglang.or
 
 ## Requirements
 
-- [Zig](https://ziglang.org/download/) 0.14.0 or later
+- [Zig](https://ziglang.org/download/) 0.15.2 or later
 
 ## Quick Start
 
