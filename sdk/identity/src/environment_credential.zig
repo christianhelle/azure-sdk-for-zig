@@ -22,8 +22,8 @@ fn getEnv(comptime key: []const u8) ?[]const u8 {
     if (builtin.os.tag == .windows) {
         // On Windows, environment variables are UTF-16. We cannot use
         // std.posix.getenv. Since EnvironmentCredential.init does not
-        // take an allocator, we fall back to "unavailable" on Windows
-        // at compile time. A future improvement can accept an allocator.
+        // take an allocator, we return null on Windows.
+        // A future improvement can accept an allocator.
         return null;
     } else {
         return std.posix.getenv(key);
